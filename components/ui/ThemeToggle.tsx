@@ -2,7 +2,11 @@
 
 import { useTheme } from '@/lib/theme-context';
 
-export default function ThemeToggle() {
+interface ThemeToggleProps {
+  variant?: 'icon' | 'labeled';
+}
+
+export default function ThemeToggle({ variant = 'icon' }: ThemeToggleProps) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -10,7 +14,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggleTheme}
       aria-label="Toggle light and dark theme"
-      className="p-2 rounded-full border transition-colors"
+      className="inline-flex items-center gap-2 p-2 rounded-full border transition-colors hover:border-[var(--accent)]"
       style={{ borderColor: 'var(--border)', color: 'var(--text-body)' }}
     >
       {isDark ? (
@@ -22,6 +26,12 @@ export default function ThemeToggle() {
           <circle cx="12" cy="12" r="4" />
           <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
         </svg>
+      )}
+
+      {variant === 'labeled' && (
+        <span className="text-xs font-medium pr-1">
+          {isDark ? 'Light Mode' : 'Dark Mode'}
+        </span>
       )}
     </button>
   );
