@@ -128,20 +128,21 @@ export default function FinalCTA() {
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={statusType === 'sending'}
-                        className="w-full px-6 py-3.5 rounded-full text-sm font-semibold transition-opacity disabled:opacity-60"
-                        style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
-                    >
-                        {statusType === 'sending' ? 'Sending...' : 'Send Message →'}
-                    </button>
-
                     {statusMessage && (
                         <p role="status" aria-live="polite" className="text-sm text-center pt-1" style={{ color: statusColor }}>
                             {statusMessage}
                         </p>
                     )}
+                    <button
+                        type="submit"
+                        disabled={statusType === 'sending'}
+                        className="w-full px-6 py-3.5 rounded-full cursor-pointer text-sm font-semibold transition-opacity disabled:opacity-60"
+                        style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
+                    >
+                        {statusType === 'sending' ? 'Sending...' : 'Send Message →'}
+                    </button>
+
+
                 </form>
             </div>
         </section>
