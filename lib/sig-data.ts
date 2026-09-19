@@ -75,7 +75,7 @@ export const SIGNATURES: SignatureData[] = [
         thumbnailAlt: 'Email signature design preview for a real estate team lead, Team tier',
         images: [
             { src: '/sign-assets/renee/thumbnail.png', alt: 'Team Lead signature thumbnail preview', label: 'Thumbnail' },
-            { src: '/sign-assets/devon/gmail_desktop.png', alt: 'Team Lead signature rendered in Gmail desktop', label: 'Gmail - Desktop' },
+            { src: '/sign-assets/renee/gmail_desktop.png', alt: 'Team Lead signature rendered in Gmail desktop', label: 'Gmail - Desktop' },
             { src: '/sign-assets/renee/gmail_mobile.png', alt: 'Team Lead signature rendered in the Gmail mobile app', label: 'Gmail - Mobile' },
             { src: '/sign-assets/renee/outlook_desktop.png', alt: 'Team Lead signature rendered in Outlook desktop', label: 'Outlook - Desktop' },
             // { src: '/sign-assets/renee/outlook_mobile.png', alt: 'Team Lead signature rendered in the Outlook mobile app', label: 'Outlook - Mobile' },

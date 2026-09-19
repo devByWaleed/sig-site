@@ -29,8 +29,7 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
         };
     }, [emblaApi, onSelect]);
 
-    // Reset to the first slide (the thumbnail) every time a different
-    // signature is opened, so it never opens mid-slider from a previous view.
+    // Reset to the first slide every time a different signature opens
     useEffect(() => {
         if (emblaApi && data) {
             emblaApi.scrollTo(0);
@@ -38,32 +37,50 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
         }
     }, [data, emblaApi]);
 
-    // Triggers the bottom-to-top entrance animation one frame after mount,
-    // and locks background scroll while the modal is open.
+    // Entrance animation, background scroll lock, and ESC key listener
     useEffect(() => {
         if (!data) {
             setVisible(false);
             return;
         }
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
         document.body.style.overflow = 'hidden';
+        window.addEventListener('keydown', handleKeyDown);
         const raf = requestAnimationFrame(() => setVisible(true));
+
         return () => {
             cancelAnimationFrame(raf);
             document.body.style.overflow = '';
+            window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [data]);
+    }, [data, onClose]);
 
-    const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-    const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+    const scrollPrev = useCallback(() => {
+        if (emblaApi) emblaApi.scrollPrev();
+    }, [emblaApi]);
+
+    const scrollNext = useCallback(() => {
+        if (emblaApi) emblaApi.scrollNext();
+    }, [emblaApi]);
 
     if (!data) return null;
 
     return (
         <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
-            {/* Glassmorphism backdrop */}
+            {/* Backdrop */}
             <div
                 onClick={onClose}
-                className={`absolute inset-0 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+                role="button"
+                tabIndex={-1}
+                aria-label="Close modal backdrop"
+                className={`absolute inset-0 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'
+                    }`}
                 style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.35)',
                     backdropFilter: 'blur(6px)',
@@ -71,7 +88,7 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                 }}
             />
 
-            {/* Panel — slides up from the bottom */}
+            {/* Modal Dialog Panel */}
             <div
                 role="dialog"
                 aria-modal="true"
@@ -85,11 +102,11 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                     borderColor: 'var(--border)',
                 }}
             >
-                {/* Close button */}
+                {/* Close Button */}
                 <button
                     onClick={onClose}
-                    aria-label="Close"
-                    className="absolute top-4 right-4 z-10 p-2 rounded-full"
+                    aria-label="Close modal"
+                    className="absolute top-4 right-4 z-10 p-2 rounded-full cursor-pointer transition-opacity hover:opacity-80"
                     style={{ backgroundColor: 'var(--bg)', color: 'var(--text-heading)' }}
                 >
                     <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -98,23 +115,23 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                 </button>
 
                 <div className="p-6 sm:p-8">
-                    {/* Label above the slider — updates with the current slide */}
+                    {/* Active Slide Label */}
                     <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--accent)' }}>
                         {data.images[selectedIndex]?.label}
                     </p>
 
-                    {/* Slider */}
+                    {/* Image Carousel */}
                     <div className="overflow-hidden rounded-xl border mb-3" style={{ borderColor: 'var(--border)' }} ref={emblaRef}>
                         <div className="flex">
-                            {data.images.map((img: any, i: any) => (
+                            {data.images.map((img, i) => (
                                 <div
-                                    key={img.label + i}
+                                    key={`${img.label}-${i}`}
                                     className="relative flex-[0_0_100%] aspect-[4/3]"
                                     style={{ backgroundColor: 'var(--bg-alt)' }}
                                 >
                                     <Image
                                         src={img.src}
-                                        alt={img.alt}
+                                        alt={img.alt || img.label}
                                         fill
                                         sizes="(max-width: 640px) 100vw, 600px"
                                         className="object-contain"
@@ -125,12 +142,12 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                         </div>
                     </div>
 
-                    {/* Prev / dots / next */}
+                    {/* Navigation Controls */}
                     <div className="flex items-center justify-between mb-8">
                         <button
                             onClick={scrollPrev}
                             aria-label="Previous image"
-                            className="p-2 rounded-full border"
+                            className="p-2 rounded-full border transition-opacity hover:opacity-80 cursor-pointer"
                             style={{ borderColor: 'var(--border)', color: 'var(--text-heading)' }}
                         >
                             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -139,10 +156,10 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                         </button>
 
                         <div className="flex gap-1.5">
-                            {data.images.map((_: any, i: any) => (
+                            {data.images.map((_, i) => (
                                 <span
                                     key={i}
-                                    className="w-1.5 h-1.5 rounded-full transition-colors"
+                                    className="w-1.5 h-1.5 rounded-full transition-colors duration-200"
                                     style={{ backgroundColor: i === selectedIndex ? 'var(--accent)' : 'var(--border)' }}
                                 />
                             ))}
@@ -151,7 +168,7 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                         <button
                             onClick={scrollNext}
                             aria-label="Next image"
-                            className="p-2 rounded-full border"
+                            className="p-2 rounded-full border transition-opacity hover:opacity-80 cursor-pointer"
                             style={{ borderColor: 'var(--border)', color: 'var(--text-heading)' }}
                         >
                             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -160,7 +177,7 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                         </button>
                     </div>
 
-                    {/* Details — each block styled a little differently, same theme tokens throughout */}
+                    {/* Signature Details */}
                     <h3 id="signature-modal-title" className="text-xl font-bold mb-1" style={{ color: 'var(--text-heading)' }}>
                         {data.name}
                     </h3>
@@ -168,8 +185,9 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                         {data.description}
                     </p>
 
+                    {/* Tags */}
                     <div className="flex flex-wrap gap-2 mb-5">
-                        {data.tags.map((tag: any) => (
+                        {data.tags.map((tag) => (
                             <span
                                 key={tag}
                                 className="text-xs font-medium px-3 py-1 rounded-full border"
@@ -180,6 +198,7 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                         ))}
                     </div>
 
+                    {/* Pricing & External Link */}
                     <div className="flex items-center justify-between mb-6 pb-6 border-b" style={{ borderColor: 'var(--border)' }}>
                         <span className="text-2xl font-bold" style={{ color: 'var(--text-heading)' }}>
                             {data.price}
@@ -188,20 +207,24 @@ export default function SignatureModal({ data, onClose }: SignatureModalProps) {
                             href={data.liveUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm font-semibold underline"
+                            className="text-sm font-semibold underline hover:opacity-80 transition-opacity"
                             style={{ color: 'var(--accent)' }}
                         >
                             View live signature ↗
                         </a>
                     </div>
 
+                    {/* Primary CTA Button */}
                     <a
                         href={data.ctaHref}
                         onClick={onClose}
-                        className="block text-center px-6 py-3.5 rounded-full text-sm font-semibold transition-transform hover:scale-[1.02]"
-                        style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
+                        className="block w-full text-center py-3 px-6 rounded-xl font-semibold transition-opacity hover:opacity-90"
+                        style={{
+                            backgroundColor: 'var(--accent)',
+                            color: 'var(--bg)',
+                        }}
                     >
-                        Get this one →
+                        Get Signature Template
                     </a>
                 </div>
             </div>

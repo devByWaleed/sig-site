@@ -56,13 +56,14 @@ export default function Footer() {
           </div>
           <ul className="space-y-2 text-sm" style={{ color: 'var(--text-body)' }}>
             <li>
-              <a href="mailto:hello@example.com" className="hover:underline" style={{ color: 'var(--text-body)' }}>
-                hello@example.com
+              <a href="mailto:waleeddev91@gmail.com" className="hover:underline" style={{ color: 'var(--text-body)' }}>
+                waleeddev91@gmail.com
               </a>
             </li>
             <li>
               <a
-                href="#"
+                href="https://calendly.com/waleedwebdev/signature-consult"
+                target='_blank'
                 className="inline-block mt-2 px-4 py-2 rounded-full text-xs font-semibold"
                 style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
               >
